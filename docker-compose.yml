@@ -1,0 +1,34 @@
+version: '3'
+
+services:
+  web:
+    build: 
+      context: .
+      args:
+        - DATABASE_URL=mysql+pymysql://root:140610@db/sgb
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_ENV: development
+      DATABASE_URL: mysql+pymysql://root:140610@db/sgb
+    depends_on:
+      - db
+    networks:
+      - flask-mysql-network
+      - flask-internet
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: 140610
+      MYSQL_DATABASE: sgb
+    ports:
+      - "3306:3306"
+    networks:
+      - flask-mysql-network
+networks:
+  flask-mysql-network:
+    internal: true
+  flask-internet:
+    internal: false
+    driver: bridge

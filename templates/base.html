@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+
+    <style>
+      .modal-dialog {
+        max-width: 80%; /* Define a largura máxima do modal */
+        width: auto;
+      }
+
+      @media (max-width: 768px) {
+        .modal-dialog {
+          max-width: 90%;
+        }
+      }
+
+      /* Estilos para o rodapé fixo */
+      footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background-color: #f8f9fa;
+        text-align: center;
+        padding: 10px 0;
+      }
+
+      /* Espaço inferior para evitar que o conteúdo cubra o rodapé */
+      body {
+        padding-bottom: 60px; /* Ajuste este valor se necessário */
+      }
+
+      /* Tamanho fixo das imagens na página inicial */
+      .card-img-top {
+        width: 415px;
+        height: 600px;
+        object-fit: cover; /* Mantém a proporção da imagem e recorta conforme necessário */
+      }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('index') }}">Biblioteca</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('listar_livros') }}">Livros</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('listar_autores') }}">Autores</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('listar_membros') }}">Membros</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('emprestimos') }}">Empréstimos</a>
+                    </li>
+                </ul>
+            </div>
+    
+            <!-- Adicionando a imagem dentro da navbar -->
+            <div class="d-none d-lg-block">
+                <img src="{{ url_for('static', filename='images/Plain_H_Small.png') }}" class="position-absolute top-0 end-0 mt-3 me-3" alt="Imagem">
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container mt-4">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-4">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Exibir mensagem quando nenhum membro for encontrado durante a pesquisa -->
+    {% if nenhum_membro_encontrado %}
+        <div class="container mt-4">
+            <div class="alert alert-warning" role="alert">
+                Nenhum membro encontrado. Por favor, cadastre um novo membro.
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Modal -->
+    <div class="modal fade" id="livroModal" tabindex="-1" aria-labelledby="livroModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="livroModalLabel">Detalhes do Livro</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="text-center mb-3">
+              <img id="modalCapa" src="" alt="Capa do Livro" class="img-fluid" style="width: 310px; height: 466px; object-fit: cover;">
+            </div>
+            <h5 id="modalTitulo"></h5>
+            <p><strong>Autor:</strong> <span id="modalAutor"></span></p>
+            <p><strong>Ano de Publicação:</strong> <span id="modalAno"></span></p>
+            <p><strong>Gênero:</strong> <span id="modalGenero"></span></p>
+            <p><strong>Disponibilidade:</strong> <span id="modalDisponibilidade"></span></p>
+            <p><strong>Sinopse:</strong> <span id="modalSinopse"></span></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rodapé fixo com Copyright -->
+    <footer>
+        © 2024 Caua Campos
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    <script>
+      function showLivroModal(titulo, autor, ano, genero, sinopse, disponibilidade, capaUrl) {
+        document.getElementById('livroModalLabel').innerText = titulo;
+        document.getElementById('modalTitulo').innerText = titulo;
+        document.getElementById('modalAutor').innerText = autor;
+        document.getElementById('modalAno').innerText = ano;
+        document.getElementById('modalGenero').innerText = genero;
+        document.getElementById('modalDisponibilidade').innerText = disponibilidade;
+        document.getElementById('modalSinopse').innerText = sinopse;
+        document.getElementById('modalCapa').src = capaUrl;
+      }
+    </script>
+</body>
+</html>
