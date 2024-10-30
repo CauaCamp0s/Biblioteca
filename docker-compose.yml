@@ -16,9 +16,12 @@ services:
     networks:
       - flask-mysql-network
       - flask-internet
+    volumes:
+      - .:/app
 
   db:
     image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: 140610
       MYSQL_DATABASE: sgb
@@ -26,6 +29,8 @@ services:
       - "3306:3306"
     networks:
       - flask-mysql-network
+      - flask-internet
+
 networks:
   flask-mysql-network:
     internal: true
