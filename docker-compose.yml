@@ -1,18 +1,23 @@
-version: '3'
+
+
+
+version: '3.8'
 
 services:
   web:
-    build: 
-      context: .
+    build:
+      context: .  # Specify the build context
+      dockerfile: Dockerfile  # Specify the Dockerfile if not named 'Dockerfile'
       args:
-        - DATABASE_URL=mysql+pymysql://root:140610@db/sgb
+        DATABASE_URL: mysql+pymysql://root:140610@db/sgb
     ports:
       - "5000:5000"
     environment:
       FLASK_ENV: development
       DATABASE_URL: mysql+pymysql://root:140610@db/sgb
     depends_on:
-      - db
+      db:
+        condition: service_healthy  # Wait for the db to be healthy
     networks:
       - flask-mysql-network
       - flask-internet
@@ -30,6 +35,13 @@ services:
     networks:
       - flask-mysql-network
       - flask-internet
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 networks:
   flask-mysql-network:
@@ -37,3 +49,6 @@ networks:
   flask-internet:
     internal: false
     driver: bridge
+
+volumes:
+  db_data:
